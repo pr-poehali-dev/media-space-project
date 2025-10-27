@@ -15,6 +15,24 @@ function Index() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const playHoverSound = () => {
+    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+  };
+
   const scrollToSection = (id: string) => {
     setActiveSection(id);
     const element = document.getElementById(id);
@@ -117,6 +135,7 @@ function Index() {
               {[1, 2, 3, 4, 5, 6].map((item) => (
                 <Card
                   key={item}
+                  onMouseEnter={playHoverSound}
                   className="bg-card/60 backdrop-blur-lg border-primary/30 p-0 overflow-hidden group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
@@ -145,6 +164,7 @@ function Index() {
               {[1, 2, 3, 4].map((item) => (
                 <Card
                   key={item}
+                  onMouseEnter={playHoverSound}
                   className="bg-card/60 backdrop-blur-lg border-secondary/30 p-6 group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="flex items-center gap-4">
@@ -184,6 +204,7 @@ function Index() {
               {[1, 2, 3, 4].map((item) => (
                 <Card
                   key={item}
+                  onMouseEnter={playHoverSound}
                   className="bg-card/60 backdrop-blur-lg border-accent/30 p-6 group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="flex items-start gap-4">
