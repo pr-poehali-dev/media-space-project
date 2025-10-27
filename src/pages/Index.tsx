@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
 function Index() {
   const [activeSection, setActiveSection] = useState('home');
   const [scrollY, setScrollY] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState<{ type: string; id: number } | null>(null);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -39,6 +42,11 @@ function Index() {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+  };
+
+  const openModal = (type: string, id: number) => {
+    setModalContent({ type, id });
+    setModalOpen(true);
   };
 
   return (
@@ -136,6 +144,7 @@ function Index() {
                 <Card
                   key={item}
                   onMouseEnter={playHoverSound}
+                  onClick={() => openModal('video', item)}
                   className="bg-card/60 backdrop-blur-lg border-primary/30 p-0 overflow-hidden group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
@@ -165,6 +174,7 @@ function Index() {
                 <Card
                   key={item}
                   onMouseEnter={playHoverSound}
+                  onClick={() => openModal('music', item)}
                   className="bg-card/60 backdrop-blur-lg border-secondary/30 p-6 group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="flex items-center gap-4">
@@ -205,6 +215,7 @@ function Index() {
                 <Card
                   key={item}
                   onMouseEnter={playHoverSound}
+                  onClick={() => openModal('blog', item)}
                   className="bg-card/60 backdrop-blur-lg border-accent/30 p-6 group hover:glow-border transition-all cursor-pointer hover:scale-105 duration-300"
                 >
                   <div className="flex items-start gap-4">
@@ -344,6 +355,153 @@ function Index() {
           </div>
         </div>
       </footer>
+
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent className="bg-card border-primary/30 max-w-3xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl glow-text flex items-center gap-3">
+              {modalContent?.type === 'video' && (
+                <>
+                  <Icon name="Video" size={28} className="text-primary" />
+                  Видео проект {modalContent.id}
+                </>
+              )}
+              {modalContent?.type === 'music' && (
+                <>
+                  <Icon name="Music" size={28} className="text-secondary" />
+                  Трек {modalContent.id}
+                </>
+              )}
+              {modalContent?.type === 'blog' && (
+                <>
+                  <Icon name="BookOpen" size={28} className="text-accent" />
+                  Статья {modalContent.id}
+                </>
+              )}
+            </DialogTitle>
+            <DialogDescription className="text-white/70">
+              {modalContent?.type === 'video' && 'Творческий видеоконтент с ультрасовременными эффектами'}
+              {modalContent?.type === 'music' && 'Музыкальная композиция в космическом стиле'}
+              {modalContent?.type === 'blog' && 'Статья о творческом процессе и вдохновении'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            {modalContent?.type === 'video' && (
+              <div className="space-y-4">
+                <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 rounded-lg flex items-center justify-center glow-border">
+                  <div className="text-center">
+                    <Icon name="Play" size={64} className="text-white/50 mx-auto mb-4" />
+                    <p className="text-white/70">Видео плеер</p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">Описание</h3>
+                  <p className="text-sm text-white/70">
+                    Уникальный видеопроект, созданный с применением современных техник монтажа и спецэффектов. 
+                    Погрузитесь в атмосферу космического творчества и ощутите магию визуального искусства.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button className="flex-1 bg-primary hover:bg-primary/80">
+                    <Icon name="Play" size={18} className="mr-2" />
+                    Воспроизвести
+                  </Button>
+                  <Button variant="outline" className="border-primary/30">
+                    <Icon name="Share2" size={18} className="mr-2" />
+                    Поделиться
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {modalContent?.type === 'music' && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-6 p-6 bg-gradient-to-br from-secondary/10 to-primary/10 rounded-lg glow-border">
+                  <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-secondary/30 to-primary/30 flex items-center justify-center flex-shrink-0">
+                    <Icon name="Disc3" size={64} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold mb-1">Трек {modalContent.id}</h3>
+                    <p className="text-white/60 mb-4">Исполнитель {modalContent.id}</p>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-3">
+                        <Button size="sm" className="bg-secondary hover:bg-secondary/80">
+                          <Icon name="Play" size={16} />
+                        </Button>
+                        <div className="flex-1 h-2 bg-white/20 rounded-full">
+                          <div className="h-full w-1/3 bg-secondary rounded-full" />
+                        </div>
+                        <span className="text-sm text-white/60">3:42</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-semibold mb-2">О треке</h3>
+                  <p className="text-sm text-white/70">
+                    Космическая музыкальная композиция, сочетающая электронные звуки с атмосферными мелодиями. 
+                    Идеально подходит для творческой работы и медитации.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button className="flex-1 bg-secondary hover:bg-secondary/80">
+                    <Icon name="Download" size={18} className="mr-2" />
+                    Скачать
+                  </Button>
+                  <Button variant="outline" className="border-secondary/30">
+                    <Icon name="Heart" size={18} className="mr-2" />
+                    В избранное
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {modalContent?.type === 'blog' && (
+              <div className="space-y-4">
+                <div className="flex items-center gap-4 text-sm text-white/60">
+                  <span className="flex items-center gap-2">
+                    <Icon name="Calendar" size={16} />
+                    15 октября 2025
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Icon name="Clock" size={16} />
+                    5 минут чтения
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Icon name="User" size={16} />
+                    Автор {modalContent.id}
+                  </span>
+                </div>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-white/70 leading-relaxed">
+                    Творчество — это путешествие в неизведанное, где каждый шаг открывает новые горизонты возможностей. 
+                    В этой статье мы исследуем, как космическое вдохновение влияет на современное искусство.
+                  </p>
+                  <p className="text-white/70 leading-relaxed mt-4">
+                    Взгляните на звёздное небо — оно наполнено историями, ожидающими своего рассказчика. 
+                    Каждая звезда — это возможность для творчества, каждая галактика — источник вдохновения.
+                  </p>
+                  <p className="text-white/70 leading-relaxed mt-4">
+                    Мы приглашаем вас присоединиться к нашему космическому путешествию творчества, 
+                    где границы существуют только в нашем воображении.
+                  </p>
+                </div>
+                <div className="flex gap-3">
+                  <Button className="flex-1 bg-accent hover:bg-accent/80 text-card">
+                    <Icon name="BookmarkPlus" size={18} className="mr-2" />
+                    Сохранить
+                  </Button>
+                  <Button variant="outline" className="border-accent/30">
+                    <Icon name="Share2" size={18} className="mr-2" />
+                    Поделиться
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
